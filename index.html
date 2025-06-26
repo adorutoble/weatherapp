@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .app-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            transition: all 0.3s ease;
+        }
+
+        .app-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
+
+        .app-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .app-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .app-subtitle {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .search-form {
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #334155;
+            background: #ffffff;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
+        }
+
+        .search-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
+        }
+
+        .weather-result {
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .weather-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #ffecd2, #fcb69f);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            box-shadow: 0 8px 24px rgba(252, 182, 159, 0.3);
+        }
+
+        .city-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .temperature {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .weather-description {
+            font-size: 18px;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 24px;
+            text-transform: capitalize;
+        }
+
+        .weather-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .detail-item {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 20px;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: #f1f5f9;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #e2e8f0;
+            transform: translateX(-2px);
+        }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 480px) {
+            .app-container {
+                padding: 24px;
+                margin: 16px;
+            }
+
+            .app-title {
+                font-size: 24px;
+            }
+
+            .temperature {
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="app-header">
+            <h1 class="app-title">Weather App</h1>
+            <p class="app-subtitle">Cek cuaca terkini di kotamu</p>
+        </div>
+
+        <div id="searchForm" class="search-form">
+            <div class="input-group">
+                <input type="text" id="cityInput" class="search-input" placeholder="Masukkan nama kota..." required>
+            </div>
+            <button type="button" id="searchBtn" class="search-btn">
+                <span id="btnText">Lihat Cuaca</span>
+            </button>
+        </div>
+
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Mengambil data cuaca...</p>
+        </div>
+
+        <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+        <div id="weatherResult" class="weather-result" style="display: none;">
+            <div class="weather-icon" id="weatherIcon">☀️</div>
+            <h2 class="city-name" id="cityName">Jakarta</h2>
+            <div class="temperature" id="temperature">28°C</div>
+            <p class="weather-description" id="weatherDesc">Cerah berawan</p>
+            
+            <div class="weather-details">
+                <div class="detail-item">
+                    <div class="detail-label">Kelembaban</div>
+                    <div class="detail-value" id="humidity">65%</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Angin</div>
+                    <div class="detail-value" id="windSpeed">12 m/s</div>
+                </div>
+            </div>
+
+            <a href="#" class="back-btn" id="backBtn">
+                <span>←</span>
+                <span>Cari Lagi</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const cityInput = document.getElementById('cityInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const loading = document.getElementById('loading');
+        const errorMessage = document.getElementById('errorMessage');
+        const weatherResult = document.getElementById('weatherResult');
+        const searchForm = document.getElementById('searchForm');
+        const backBtn = document.getElementById('backBtn');
+
+        // Weather data simulation
+        const weatherData = {
+            'jakarta': {
+                name: 'Jakarta',
+                temp: 28,
+                desc: 'cerah berawan',
+                humidity: 65,
+                wind: 12,
+                icon: '☀️'
+            },
+            'bandung': {
+                name: 'Bandung',
+                temp: 24,
+                desc: 'berawan',
+                humidity: 70,
+                wind: 8,
+                icon: '☁️'
+            },
+            'surabaya': {
+                name: 'Surabaya',
+                temp: 30,
+                desc: 'cerah',
+                humidity: 60,
+                wind: 15,
+                icon: '☀️'
+            },
+            'yogyakarta': {
+                name: 'Yogyakarta',
+                temp: 26,
+                desc: 'hujan ringan',
+                humidity: 80,
+                wind: 10,
+                icon: '🌧️'
+            },
+            'medan': {
+                name: 'Medan',
+                temp: 29,
+                desc: 'berawan sebagian',
+                humidity: 68,
+                wind: 11,
+                icon: '⛅'
+            },
+            'banjar': {
+                name: 'Banjar',
+                temp: 25,
+                desc: 'cerah berawan',
+                humidity: 72,
+                wind: 9,
+                icon: '🌤️'
+            }
+        };
+
+        function showLoading() {
+            loading.style.display = 'block';
+            searchForm.style.display = 'none';
+            weatherResult.style.display = 'none';
+            errorMessage.style.display = 'none';
+        }
+
+        function hideLoading() {
+            loading.style.display = 'none';
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            searchForm.style.display = 'block';
+            weatherResult.style.display = 'none';
+            hideLoading();
+        }
+
+        function showWeather(data) {
+            document.getElementById('weatherIcon').textContent = data.icon;
+            document.getElementById('cityName').textContent = data.name;
+            document.getElementById('temperature').textContent = `${data.temp}°C`;
+            document.getElementById('weatherDesc').textContent = data.desc;
+            document.getElementById('humidity').textContent = `${data.humidity}%`;
+            document.getElementById('windSpeed').textContent = `${data.wind} m/s`;
+
+            searchForm.style.display = 'none';
+            errorMessage.style.display = 'none';
+            weatherResult.style.display = 'block';
+            hideLoading();
+        }
+
+        function searchWeather() {
+            const city = cityInput.value.trim().toLowerCase();
+            
+            if (!city) {
+                showError('Silakan masukkan nama kota.');
+                return;
+            }
+
+            showLoading();
+
+            // Simulate API call delay
+            setTimeout(() => {
+                if (weatherData[city]) {
+                    showWeather(weatherData[city]);
+                } else {
+                    showError('Kota tidak ditemukan. Coba: Jakarta, Bandung, Surabaya, Yogyakarta, Medan, atau Banjar.');
+                }
+            }, 1500);
+        }
+
+        function resetForm() {
+            searchForm.style.display = 'block';
+            weatherResult.style.display = 'none';
+            errorMessage.style.display = 'none';
+            cityInput.value = '';
+            cityInput.focus();
+        }
+
+        searchBtn.addEventListener('click', searchWeather);
+        backBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetForm();
+        });
+
+        cityInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchWeather();
+            }
+        });
+
+        // Focus on input when page loads
+        cityInput.focus();
+    </script>
+</body>
+</html>
